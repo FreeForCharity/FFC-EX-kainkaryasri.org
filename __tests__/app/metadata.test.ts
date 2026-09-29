@@ -56,4 +56,15 @@ describe('Site metadata', () => {
     expect(siteMetadata.manifest).toBeDefined()
     expect(siteMetadata.icons).toBeDefined()
   })
+
+  it("uses the site's own 1200x630 social card, not the template's app icon", () => {
+    const og = siteMetadata.openGraph as {
+      images: { url: string; width: number; height: number }[]
+    }
+    expect(og.images[0].url).toMatch(/\/og-card\.png$/)
+    expect(og.images[0].width).toBe(1200)
+    expect(og.images[0].height).toBe(630)
+    const twitter = siteMetadata.twitter as { images: string[] }
+    expect(twitter.images[0]).toBe(og.images[0].url)
+  })
 })
