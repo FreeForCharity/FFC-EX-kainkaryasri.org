@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test'
+import { PENDING_TEXT, isPending, siteConfig } from '../src/lib/site.config'
+import { team } from '../src/data/team'
 
 /**
  * Footer-Only Template Smoke Tests
@@ -9,26 +11,21 @@ import { test, expect } from '@playwright/test'
  */
 
 test.describe('Footer-only template', () => {
-  test('should render the Team section with 5 members', async ({ page }) => {
+  test('should render the Team section (or its pending placeholder)', async ({ page }) => {
     await page.goto('/')
+    test.skip(team.length === 0 && !isPending('team'), 'No team and not pending: section hidden')
 
-    await expect(page.getByRole('heading', { name: 'The Free For Charity Team' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: `The ${siteConfig.name} Team` })).toBeVisible()
 
     // Cards render an initials monogram, not a photo — there are no team images.
-    const memberPhotos = page.locator('#team img')
-    await expect(memberPhotos).toHaveCount(0)
+    await expect(page.locator('#team img')).toHaveCount(0)
 
-    // Each member renders a name heading; when a safe LinkedIn URL is present the
-    // whole card links to it (new tab).
-    for (const member of [
-      'Clarke Moyer',
-      'Chris Rae',
-      'Tyler Carlotto',
-      'Brennan Darling',
-      'Rebecca Cook',
-    ]) {
-      await expect(page.getByRole('heading', { level: 3, name: member })).toBeVisible()
-      await expect(page.getByRole('link', { name: `${member} on LinkedIn` })).toBeVisible()
+    if (team.length === 0) {
+      // A pending team shows the plain-text placeholder, never FFC's staff.
+      await expect(page.locator('#team').getByText(PENDING_TEXT)).toBeVisible()
+    }
+    for (const member of team) {
+      await expect(page.getByRole('heading', { level: 3, name: member.name })).toBeVisible()
     }
   })
 

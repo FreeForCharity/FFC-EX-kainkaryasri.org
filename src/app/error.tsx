@@ -68,13 +68,19 @@ export default function Error({
               >
                 Vulnerability Disclosure Policy
               </Link>{' '}
-              contact route, or email{' '}
-              <a
-                href={`mailto:${siteConfig.contactEmail}`}
-                className="text-[#005BB7] font-[700] underline decoration-dotted hover:decoration-solid transition-all"
-              >
-                {siteConfig.contactEmail}
-              </a>
+              contact route
+              {/* No email link while the charity's address is still awaited. */}
+              {siteConfig.contactEmail.trim() && (
+                <>
+                  , or email{' '}
+                  <a
+                    href={`mailto:${siteConfig.contactEmail}`}
+                    className="text-[#005BB7] font-[700] underline decoration-dotted hover:decoration-solid transition-all"
+                  >
+                    {siteConfig.contactEmail}
+                  </a>
+                </>
+              )}
               .
             </p>
             {error.digest ? (

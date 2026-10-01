@@ -21,6 +21,8 @@ jest.mock('../../src/components/ui/TeamMemberCard', () => {
 })
 
 import HomePage from '../../src/app/home-page'
+import { PENDING_TEXT, isPending } from '../../src/lib/site.config'
+import { team } from '../../src/data/team'
 
 describe('HomePage (app/home-page)', () => {
   it('should render without crashing', () => {
@@ -28,7 +30,13 @@ describe('HomePage (app/home-page)', () => {
   })
 
   it('should render TheFreeForCharityTeam component', () => {
-    render(<HomePage />)
-    expect(screen.getAllByTestId('team-member-card').length).toBeGreaterThan(0)
+    const { container } = render(<HomePage />)
+    expect(container.querySelector('#team')).toBeInTheDocument()
+    if (team.length === 0 && isPending('team')) {
+      // No roster yet: the section shows the "awaiting information" note.
+      expect(screen.getByText(PENDING_TEXT)).toBeInTheDocument()
+    } else {
+      expect(screen.getAllByTestId('team-member-card').length).toBeGreaterThan(0)
+    }
   })
 })

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { testConfig } from './test.config'
+import { siteConfig } from '../src/lib/site.config'
 
 /**
  * Post-Deploy Smoke Tests
@@ -46,15 +47,16 @@ const footerPolicyLinks = [
   // The charity's own donation policy. Matched with exact names below so this
   // does not also match "Free For Charity Donation Policy".
   { name: 'Donation Policy', pathSuffix: '/donation-policy' },
-  { name: 'Free For Charity Privacy Policy', pathSuffix: '/privacy-policy' },
-  { name: 'Free For Charity Cookie Policy', pathSuffix: '/cookie-policy' },
-  { name: 'Free For Charity Terms of Service', pathSuffix: '/terms-of-service' },
+  // The site's own policies carry its name (siteConfig.name).
+  { name: `${siteConfig.name} Privacy Policy`, pathSuffix: '/privacy-policy' },
+  { name: `${siteConfig.name} Cookie Policy`, pathSuffix: '/cookie-policy' },
+  { name: `${siteConfig.name} Terms of Service`, pathSuffix: '/terms-of-service' },
   {
-    name: 'Free For Charity Vulnerability Disclosure Policy',
+    name: `${siteConfig.name} Vulnerability Disclosure Policy`,
     pathSuffix: '/vulnerability-disclosure-policy',
   },
   {
-    name: 'Free For Charity Security Acknowledgement',
+    name: `${siteConfig.name} Security Acknowledgement`,
     pathSuffix: '/security-acknowledgements',
   },
 ]
@@ -85,7 +87,7 @@ test.describe('Post-deploy smoke tests', () => {
     await expect(footer.getByRole('heading', { name: 'Contact Us' })).toBeVisible()
 
     // Policy section heading
-    await expect(footer.getByRole('heading', { name: 'Free For Charity Policy' })).toBeVisible()
+    await expect(footer.getByRole('heading', { name: `${siteConfig.name} Policy` })).toBeVisible()
   })
 
   test('footer contains policy links with correct paths', async ({ page }) => {
@@ -108,11 +110,11 @@ test.describe('Post-deploy smoke tests', () => {
     await page.goto('./')
     const footer = page.locator('footer')
 
-    // Verify all 4 social links
-    for (const [, social] of Object.entries(testConfig.socialLinks)) {
-      const link = footer.locator(`a[href*="${social.url}"]`)
-      await expect(link, `Social link for ${social.ariaLabel}`).toBeVisible()
-      await expect(link).toHaveAttribute('aria-label', social.ariaLabel)
+    // Verify the site's own social links (siteConfig.social)
+    for (const { href, label } of testConfig.socialLinks.links) {
+      const link = footer.locator(`a[href="${href}"]`)
+      await expect(link, `Social link for ${label}`).toBeVisible()
+      await expect(link).toHaveAttribute('aria-label', label)
     }
 
     // Copyright with current year

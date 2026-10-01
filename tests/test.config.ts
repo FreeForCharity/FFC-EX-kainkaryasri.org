@@ -11,28 +11,16 @@
  * 3. Maintain a single source of truth for test expectations
  */
 
+import { siteConfig } from '../src/lib/site.config'
+
 export const testConfig = {
   /**
    * Social Media Links Configuration
-   * Used in: tests/social-links.spec.ts
+   * Used in: tests/social-links.spec.ts. This site's own links, from
+   * siteConfig (the template's were Free For Charity's).
    */
   socialLinks: {
-    facebook: {
-      url: 'facebook.com/freeforcharity',
-      ariaLabel: 'Facebook',
-    },
-    twitter: {
-      url: 'x.com/freeforcharity1',
-      ariaLabel: 'X (Twitter)',
-    },
-    linkedin: {
-      url: 'linkedin.com/company/freeforcharity',
-      ariaLabel: 'LinkedIn',
-    },
-    github: {
-      url: 'github.com/FreeForCharity/FFC-IN-Footer_Only_Template',
-      ariaLabel: 'GitHub',
-    },
+    links: siteConfig.social.filter((s) => s.href.trim()),
   },
 
   /**
@@ -40,12 +28,13 @@ export const testConfig = {
    * Used in: tests/copyright.spec.ts
    */
   copyright: {
-    text: 'All Rights Are Reserved by Free For Charity a US 501c3 Non Profit',
+    text: `All Rights Are Reserved by ${siteConfig.name}${
+      siteConfig.taxStatusLabel.trim() ? ` ${siteConfig.taxStatusLabel.trim()}` : ''
+    }`,
     searchText: 'All Rights Are Reserved',
-    // The permanent "Supported by Free For Charity" attribution (FFC footer
-    // standard) — keep these expectations when customizing the template.
-    linkUrl: 'https://freeforcharity.org',
-    linkText: 'Free For Charity',
+    // The permanent "Supported by" attribution (FFC footer standard).
+    linkUrl: siteConfig.supportedBy.url,
+    linkText: siteConfig.supportedBy.name,
   },
 
   /**
@@ -61,7 +50,8 @@ export const testConfig = {
    * Used in: tests/footer-only.spec.ts
    */
   logo: {
-    headerAlt: 'Free For Charity',
+    // No charity logo yet: the header shows the site name as text.
+    headerText: siteConfig.name,
   },
 
   /**
